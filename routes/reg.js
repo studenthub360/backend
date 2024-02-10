@@ -1,6 +1,10 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-// const multer = require('multer');
+const { v4: uuidv4 } = require('uuid');
+
+// Generate a random ID
+const randomId = uuidv4();
+
 const { connection } = require('../conn');
 
 const router = express.Router();
@@ -37,6 +41,7 @@ router.post('/', async (req, res) => {
     }
 
     const newUser = {
+      unique_id : randomId,
       full_name: fullName,
       email: email,
       university: university,
