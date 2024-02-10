@@ -1,6 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const { connection } = require('../conn'); // Import the database connection
+const { connection } = require('../conn');
 
 const router = express.Router();
 
@@ -20,12 +20,12 @@ router.post('/', async (req, res) => {
         const passwordMatch = await bcrypt.compare(password, user.password);
 
         if (passwordMatch) {
-          res.json({ message: 'Login successful' });
+          res.status(200).json({message : 'Login Successful'})
         } else {
-          res.status(401).json({ error: 'Invalid credentials' });
+          res.status(401).json({ error: 'Invalid Password' });
         }
       } else {
-        res.status(401).json({ error: 'Invalid credentials' });
+        res.status(401).json({ error: 'Email does not exist' });
       }
     });
   } catch (error) {
