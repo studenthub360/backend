@@ -8,10 +8,10 @@ const generateJwt = (userID, res) => {
 
         res.cookie('jwt', token, {
             maxAge: 15 * 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            domain: 'studenthub360.software'
+            // httpOnly: true,
+            // secure: true,
+            // sameSite: 'strict' // This will help prevent the cookie from being stolen by malicious scripts
+            // domain: 'studenthub360.software'
         });
     } catch (error) {
         console.error('Error generating JWT:', error);
