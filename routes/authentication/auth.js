@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const { connection } = require('../conn');
+const { connection } = require('../../conn');
+const { generateJwt } = require('../../utils/jwtGenerator');
 
 const router = express.Router();
 
@@ -20,7 +21,11 @@ router.post('/', async (req, res) => {
         const passwordMatch = await bcrypt.compare(password, user.password);
 
         if (passwordMatch) {
-          res.status(200).json({message : 'Login Successful'})
+          // Generate JWT token and set as a cookie
+          generateJwt(user.unique_id , res);
+
+          // Send response after setting cookie
+          res.status(200).json({message : 'Login Successful'});
         } else {
           res.status(401).json({ error: 'Invalid Password' });
         }
