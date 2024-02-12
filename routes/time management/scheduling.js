@@ -28,43 +28,40 @@ router.post('/', async (req, res) => {
 
 })
 
-router.get('/', async (req, res) => {
+router.get('/all', async (req, res) => {
   try {
-      // Fetch all events from the database
       const schedule = await queryAsync('SELECT * FROM schedule');
-
-      // Send the events as a response
       res.status(200).json(schedule);
   } catch (error) {
       console.error("Error fetching events:", error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error", message : error });
   }
 });
 
-router.get('/all', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const userId = req.user.id;
-      // Fetch all events from the database
       const schedule = await queryAsync('SELECT * FROM schedule WHERE user_id=?'[userId]);
 
-      // Send the events as a response
       res.status(200).json(schedule);
   } catch (error) {
       console.error("Error fetching events:", error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error", message : error });
   }
 });
 
 router.get('/:id', async (req, res) => {
   try {
       const scheduleId = req.params.id; 
-      
-      const scheduleDetail = await queryAsync('SELECT * FROM event where id = ?', [scheduleId]);
-
+      const userId = req.user.id;
+      const scheduleDetail = await queryAsync('SELECT * FROM event where id = ? AND user_id = ?', [scheduleId, userId]);
       res.status(200).json(scheduleDetail);
+      if(res.status === 404){
+        res.json({message : 'You have no such schedule'})
+      }
   } catch (error) {
       console.error("Error fetching events:", error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error", message : error });
   }
 });
 

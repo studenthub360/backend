@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.post('/', async (req, res) => {
     try {
+        const userId = req.user.id;
         const { taskName, description} = req.body;
 
         if (!taskName || !description) {
@@ -13,7 +14,8 @@ router.post('/', async (req, res) => {
 
         const newTask = {
             taskName : taskName,
-            description : description
+            description : description,
+            user_id : userId
         };
 
         // Insert the new task into the database
@@ -23,38 +25,40 @@ router.post('/', async (req, res) => {
         res.status(201).json({ message: "Task created successfully", task: newTask });
     } catch (error) {
         console.error("Error from the task endpoint:", error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: "Internal server error", message : error });
     }
 });
 
 router.put('/:taskId', async (req, res) => {
   try {
+    const userId = req.user.id;
       const { taskId } = req.params;
 
-      const [task] = await queryAsync('SELECT updateTask FROM task WHERE id = ?', [taskId]);
+      const [task] = await queryAsync('SELECT updateTask FROM task WHERE id = ? AND user_id = ? ', [taskId,userId]);
       
       const newUpdateTaskValue = task.updateTask === 1 ? 0 : 1;
 
-      await queryAsync('UPDATE task SET updateTask = ? WHERE id = ?', [newUpdateTaskValue, taskId]);
+      await queryAsync('UPDATE task SET updateTask = ? WHERE id = ? AND user_id = ?', [newUpdateTaskValue, taskId, userId]);
 
       res.status(200).json({ message: "Task updated successfully" });
   } catch (error) {
       console.error("Error updating task:", error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error", message : error });
   }
 });
 
 
 router.delete('/:taskId', async (req, res) => {
   try {
+    const userId = req.user.id;
       const { taskId } = req.params;
 
-      await queryAsync('DELETE FROM task WHERE id = ?', [taskId]);
+      await queryAsync('DELETE FROM task WHERE id = ? AND  user_id = ?', [taskId,userId]);
 
       res.status(200).json({ message: "Task deleted successfully" });
   } catch (error) {
       console.error("Error deleting task:", error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error", message : error });
   }
 });
 
@@ -68,7 +72,7 @@ router.get('/', async (req, res) => {
       res.status(200).json(tasks);
   } catch (error) {
       console.error("Error fetching tasks:", error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error", message : error });
   }
 });
 
