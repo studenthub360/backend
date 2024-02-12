@@ -25,7 +25,8 @@ router.post('/', async (req, res) => {
           generateJwt(user.unique_id , res);
 
           // Send response after setting cookie
-          res.status(200).json({message : 'Login Successful'});
+          res.status(200).json({message : 'Login Successful',
+           data: user});
         } else {
           res.status(401).json({ error: 'Invalid Password' });
         }
