@@ -10,6 +10,8 @@ const userRoutes = require('./routes/authentication/user');
 const taskRoutes = require('./routes/time management/task')
 const eventRoutes = require('./routes/time management/event')
 const scheduleRoutes = require('./routes/time management/scheduling')
+const netWorkGroupRoutes = require('./routes/social networking/netGroups')
+const netWorkEventRoutes = require('./routes/social networking/newEvents')
 const messageRoutes = require('./routes/chat/message');
 const cookieParser = require( 'cookie-parser' );
 
@@ -38,6 +40,8 @@ app.use("/api/user", protectRoute, userRoutes);
 app.use("/api/task", protectRoute, taskRoutes);
 app.use("/api/event", protectRoute, eventRoutes);
 app.use("/api/schedule", protectRoute, scheduleRoutes);
+app.use("/api/netgrp", protectRoute, netWorkGroupRoutes);
+app.use("/api/netevents", protectRoute, netWorkEventRoutes);
 // Global Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error(err);
