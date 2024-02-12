@@ -28,6 +28,8 @@ router.post('/', async (req, res) => {
       unique_id: uuidv4(), 
       full_name: fullName,
       email: email,
+      level : level,
+      department : department,
       university: university,
       password: hashedPassword,
     };
@@ -38,7 +40,6 @@ router.post('/', async (req, res) => {
 
     res.status(201).json({ message: 'User registered successfully', user: newUser });
   } catch (error) {
-    console.error('Error during user registration:', error);
     res.status(500).json({ message: 'Internal server error', error : error });
   }
 });
