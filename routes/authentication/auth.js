@@ -8,6 +8,9 @@ const router = express.Router();
 router.post('/', async (req, res) => {
   try {
     const { email, password } = req.body;
+    if(!email || !password){
+      res.status(404).json({message : 'Fields cannot be empty'})
+    }
     const query = 'SELECT * FROM user WHERE email = ?';
     
     connection.query(query, [email], async (error, results) => {

@@ -5,8 +5,8 @@ const router = express.Router()
 
 router.post('/', async (req, res) => {
   try {
-      const { eventName, description, date,location, time, image } = req.body;
-      if (!eventName || !description || !location || !date || !time || !image) {
+      const { eventName, department, date, time, image } = req.body;
+      if (!eventName || !department || !date || !time || !image) {
           return res.status(400).json({ message: "All fields required please" });
       }
 
@@ -14,10 +14,9 @@ router.post('/', async (req, res) => {
 
       const newEvent = {
           eventName: eventName,
-          description: description,
+          department: department,
           date: date,
           time: time,
-          location : location,
           image: image,
           user_id: userId 
       };
@@ -31,20 +30,7 @@ router.post('/', async (req, res) => {
 });
 
 
-router.get('/all', async (req, res) => {
-  try {
-    const type = 0
-      const events = await queryAsync('SELECT * FROM event WHERE type = ?', type);
 
-      res.status(200).json(events);
-
-  } catch (error) {
-
-      console.error("Error fetching events:", error);
-
-      res.status(500).json({ error: "Internal server error", message : error });
-  }
-});
 
 router.get('/', async (req, res) => {
   try {
@@ -60,21 +46,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
-  try {
-    const userId = req.user.id;
-      const eventId = req.params.id; 
-      
-      const eventDetail = await queryAsync('SELECT * FROM event where user_id = ? AND id = ?',[userId, eventId]);
-      if(eventDetail < 1){
-        res.json({message : 'You have no such event'})
-      }
-      res.status(200).json({message : eventDetail});
-  } catch (error) {
-      console.error("Error fetching events:", error);
-      res.status(500).json({ error: "Internal server error", message : error });
-  }
-});
 
 
 module.exports = router
