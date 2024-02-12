@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
     ]);
 
     if (existingUsers.length > 0) {
-      return res.status(409).json({ message: 'Username or email already taken' });
+      return res.status(409).json({ message: 'Email already taken' });
     }
 
     const newUser = {
@@ -34,13 +34,12 @@ router.post('/', async (req, res) => {
 
     await queryAsync('INSERT INTO user SET ?', newUser);
 
-    // Generate JWT after inserting the user into the database
     generateJwt(newUser.unique_id, res);
 
     res.status(201).json({ message: 'User registered successfully', user: newUser });
   } catch (error) {
     console.error('Error during user registration:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: 'Internal server error', error : error });
   }
 });
 
