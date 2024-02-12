@@ -1,22 +1,10 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-// const multer = require('multer');
-const { connection } = require('../conn');
+const { v4: uuidv4 } = require('uuid');
+const { queryAsync } = require('../conn');
+const { generateJwt } = require('../utils/jwtGenerator');
 
 const router = express.Router();
-// const upload = multer(); 
-
-const queryAsync = (sql, values) => {
-  return new Promise((resolve, reject) => {
-    connection.query(sql, values, (error, results) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(results);
-      }
-    });
-  });
-};
 
 router.post('/', async (req, res) => {
   const { email, password, fullName, university } = req.body;
@@ -37,6 +25,7 @@ router.post('/', async (req, res) => {
     }
 
     const newUser = {
+      unique_id: uuidv4(), 
       full_name: fullName,
       email: email,
       university: university,
@@ -44,6 +33,9 @@ router.post('/', async (req, res) => {
     };
 
     await queryAsync('INSERT INTO user SET ?', newUser);
+
+    // Generate JWT after inserting the user into the database
+    generateJwt(newUser.unique_id, res);
 
     res.status(201).json({ message: 'User registered successfully', user: newUser });
   } catch (error) {
