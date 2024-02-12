@@ -9,7 +9,8 @@ const generateJwt = (userID, res) => {
         maxAge: 15 * 24 * 60 * 60 * 1000,
         httpOnly: true,
         secure : true,
-        sameSite: 'strict'
+        sameSite: 'strict',
+        Domain : studenthub360.software
     });
 };
 
