@@ -7,13 +7,20 @@ const { generateJwt } = require('../../utils/jwtGenerator');
 const router = express.Router();
 
 router.post('/', async (req, res) => {
-  const { email, password, fullName, university, level, department } = req.body;
+  const { email, password, confirmPassword, fullName, university, level, department } = req.body;
 
-  if (!email || !password || !fullName || !university || !level || !department) {
+  if (!email || !password || !confirmPassword || !fullName || !university || !level || !department) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
   try {
+
+    // Checking if the passwords match
+    if (confirmPassword !== password) {
+      res.json({message : "Passwords do not match"})
+      throw new Error("Passwords don't match");
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const existingUsers = await queryAsync('SELECT * FROM user WHERE email = ?', [
