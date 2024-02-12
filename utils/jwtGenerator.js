@@ -1,17 +1,22 @@
 const jwt = require('jsonwebtoken');
 
 const generateJwt = (userID, res) => {
-    const token = jwt.sign({ id: userID }, process.env.JWT_SECRET, {
-        expiresIn: '15d'
-    });
+    try {
+        const token = jwt.sign({ id: userID }, process.env.JWT_SECRET, {
+            expiresIn: '15d'
+        });
 
-    res.cookie('jwt', token, {
-        maxAge: 15 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        secure : true,
-        sameSite: 'strict',
-        Domain : studenthub360.software
-    });
+        res.cookie('jwt', token, {
+            maxAge: 15 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            domain: 'studenthub360.software'
+        });
+    } catch (error) {
+        console.error('Error generating JWT:', error);
+        res.status(500).json({ error: 'Internal Server Error', message: error.message });
+    }
 };
 
 module.exports = { generateJwt };
