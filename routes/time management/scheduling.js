@@ -54,7 +54,7 @@ router.get('/:id', async (req, res) => {
   try {
       const scheduleId = req.params.id; 
       const userId = req.user.id;
-      const scheduleDetail = await queryAsync('SELECT * FROM event where id = ? AND user_id = ?', [scheduleId, userId]);
+      const scheduleDetail = await queryAsync('SELECT * FROM schedule where id = ? AND user_id = ?', [scheduleId, userId]);
       res.status(200).json(scheduleDetail);
       if(res.status === 404){
         res.json({message : 'You have no such schedule'})
