@@ -2,7 +2,6 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const { queryAsync } = require('../../conn');
-const { generateJwt } = require('../../utils/jwtGenerator');
 
 const router = express.Router();
 
@@ -42,8 +41,6 @@ router.post('/', async (req, res) => {
     };
 
     await queryAsync('INSERT INTO user SET ?', newUser);
-
-    generateJwt(newUser.unique_id, res);
 
     res.status(201).json({ message: 'User registered successfully', user: newUser });
   } catch (error) {

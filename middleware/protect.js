@@ -1,19 +1,17 @@
 const jwt = require("jsonwebtoken");
 const { queryAsync } = require('../conn'); 
 
-
-
 const protectRoute = async (req, res, next) => {
     try {
-        console.log(req.headers['authorization'])
-        const token = req.headers['authorization'];
+        const authHeader = req.headers['Authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
 
         if (!token) {
             return res.status(401).json({ error: "Unauthorized - No Token Provided" });
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log(decoded)
+
         if (!decoded) {
             return res.status(401).json({ error: "Unauthorized - Invalid Token" });
         }

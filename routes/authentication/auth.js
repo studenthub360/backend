@@ -24,12 +24,11 @@ router.post('/', async (req, res) => {
         const passwordMatch = await bcrypt.compare(password, user.password);
 
         if (passwordMatch) {
-          // Generate JWT token and set as a cookie
-          generateJwt(user.unique_id , res);
+          // Generate JWT token
+          const token = generateJwt(user.unique_id);
 
-          // Send response after setting cookie
-          res.status(200).json({message : 'Login Successful',
-           data: user});
+          // Send response with token
+          res.status(200).json({ message: 'Login Successful', token });
         } else {
           res.status(401).json({ error: 'Invalid Password' });
         }
@@ -39,7 +38,7 @@ router.post('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Error during login:', error);
-    res.status(500).json({ error: 'Internal Server Error', message: error });
+    res.status(500).json({ error: 'Internal Server Error', message: error.message });
   }
 });
 
