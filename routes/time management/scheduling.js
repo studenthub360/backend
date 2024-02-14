@@ -30,7 +30,8 @@ router.post('/', async (req, res) => {
 
 router.get('/all', async (req, res) => {
   try {
-      const schedule = await queryAsync('SELECT * FROM schedule');
+    const userId = req.user.id;
+      const schedule = await queryAsync('SELECT * FROM schedule WHERE user_id=?', [userId]);
       res.status(200).json(schedule);
   } catch (error) {
       console.error("Error fetching events:", error);
