@@ -65,8 +65,9 @@ router.delete('/:taskId', async (req, res) => {
 // Endpoint to fetch all tasks
 router.get('/', async (req, res) => {
   try {
+    const userID = req.user.id
       // Fetch all tasks from the database
-      const tasks = await queryAsync('SELECT * FROM task');
+      const tasks = await queryAsync('SELECT * FROM task WHERE user_id = ?', userID );
 
       // Send the tasks as a response
       res.status(200).json(tasks);

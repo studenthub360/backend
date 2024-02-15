@@ -34,16 +34,5 @@ const queryAsync = (sql, values) => {
   });
 };
 
-const executeQuery = (sql, values) => {
-  return new Promise((resolve, reject) => {
-      connection.query(sql, values, (error, results) => {
-          if (error) {
-              reject(error);
-          } else {
-              resolve(results);
-          }
-      });
-  });
-};
-module.exports = { connection, connectToDatabase, queryAsync, executeQuery };
+module.exports = { connection, connectToDatabase, queryAsync };
 
