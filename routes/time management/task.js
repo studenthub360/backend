@@ -32,20 +32,26 @@ router.post('/', async (req, res) => {
 router.put('/:taskId', async (req, res) => {
   try {
     const userId = req.user.id;
-      const { taskId } = req.params;
+    const { taskId } = req.params;
+    console.log(taskId);
 
-      const [task] = await queryAsync('SELECT updateTask FROM task WHERE id = ? AND user_id = ? ', [taskId,userId]);
-      
-      const newUpdateTaskValue = task.updateTask === 1 ? 0 : 1;
+    const [task] = await queryAsync('SELECT updateTask FROM task WHERE id = ? AND user_id = ? ', [taskId, userId]);
+    
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
 
-      await queryAsync('UPDATE task SET updateTask = ? WHERE id = ? AND user_id = ?', [newUpdateTaskValue, taskId, userId]);
+    const newUpdateTaskValue = task.updateTask === 1 ? 0 : 1;
 
-      res.status(200).json({ message: "Task updated successfully" });
+    await queryAsync('UPDATE task SET updateTask = ? WHERE id = ? AND user_id = ?', [newUpdateTaskValue, taskId, userId]);
+
+    res.status(200).json({ message: "Task updated successfully" });
   } catch (error) {
-      console.error("Error updating task:", error);
-      res.status(500).json({ error: "Internal server error", message : error });
+    console.error("Error updating task:", error);
+    res.status(500).json({ error: "Internal server error", message: error.message });
   }
 });
+
 
 
 router.delete('/:taskId', async (req, res) => {
