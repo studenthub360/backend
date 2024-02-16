@@ -15,9 +15,9 @@ router.get('/', async(req, res) =>{
 router.post('/', async (req, res) => {
     try {
         const userId = req.user.id;
-        const { name, image, link} = req.body;
+        const { name, image, description, link} = req.body;
 
-        if (!name || !image || !link) {
+        if (!name || !image || !description || !link) {
             return res.status(400).json({ message: "All fields required" });
         }
 
@@ -25,6 +25,7 @@ router.post('/', async (req, res) => {
             name : name,
             image : image,
             link : link,
+            description : description,
             user_id : userId
         };
 

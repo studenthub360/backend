@@ -15,9 +15,9 @@ router.get('/', async(req, res) =>{
 router.post('/', async (req, res) => {
     try {
         const userId = req.user.id;
-        const { playlist, player, link} = req.body;
+        const { playlist, player,description, link} = req.body;
 
-        if (!playlist || !player || !link) {
+        if (!playlist || !player || !description || !link) {
             return res.status(400).json({ message: "All fields required" });
         }
 
@@ -25,6 +25,7 @@ router.post('/', async (req, res) => {
             playlistName : playlist,
             musicPlayer : player,
             link : link,
+            description : description,
             user_id : userId
         };
 
