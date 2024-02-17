@@ -2,10 +2,23 @@ const express = require('express')
 const { queryAsync } = require('../../conn');
 
 const router = express.Router()
+const multer = require('multer');
+const fs = require('fs');
 
-router.post('/', async (req, res) => {
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, '../../uploads'); 
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+
+const upload = multer({ storage: storage });
+router.post('/', upload.single('image'), async (req, res) => {
   try {
-      const { eventName, description, date,location, time, image } = req.body;
+      const { eventName, description, date, location, time } = req.body;
+      const image = req.file.filename; 
       if (!eventName || !description || !location || !date || !time || !image) {
           return res.status(400).json({ message: "All fields required please" });
       }
@@ -17,16 +30,16 @@ router.post('/', async (req, res) => {
           description: description,
           date: date,
           time: time,
-          location : location,
+          location: location,
           image: image,
-          user_id: userId 
+          user_id: userId
       };
 
       await queryAsync('INSERT INTO event SET ?', newEvent);
       res.status(201).json({ message: 'Event created Successfully', event: newEvent });
   } catch (error) {
       console.log("Error from the event endpoint is: ", error);
-      res.status(500).json({ error: "Internal server error", message : error });
+      res.status(500).json({ error: "Internal server error", message: error });
   }
 });
 
