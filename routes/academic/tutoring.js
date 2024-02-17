@@ -5,26 +5,23 @@ const router = express.Router()
 
 router.post('/', async (req, res) => {
   try {
-      const { eventName, description, date,location, time, image } = req.body;
-      if (!eventName || !description || !location || !date || !time || !image) {
+      const { studyGroup, focus, mentor,application, link } = req.body;
+      if (!studyGroup || !focus || !mentor || !application || !link) {
           return res.status(400).json({ message: "All fields required please" });
       }
 
-      const userId = req.user.id;
+      // const userId = req.user.id;
 
-      const newEvent = {
-          eventName: eventName,
-          description: description,
-          date: date,
-          time: time,
-          location : location,
-          image: image,
-          user_id: userId, 
-          type: 1 
+      const newTutorial = {
+          studyGroup: studyGroup,
+          focus: focus,
+          mentor: mentor,
+          application: application,
+          link : link
       };
 
-      await queryAsync('INSERT INTO event SET ?', newEvent);
-      res.status(201).json({ message: 'Tutorial created Successfully', event: newEvent });
+      await queryAsync('INSERT INTO tutorials SET ?', newTutorial);
+      res.status(201).json({ message: 'Tutorial created Successfully', Tutorials: newTutorial });
   } catch (error) {
       console.log("Error from the tutorial endpoint is: ", error);
       res.status(500).json({ error: "Internal server error", message : error });
@@ -34,8 +31,7 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const type = 1
-      const tutorials = await queryAsync('SELECT * FROM event WHERE type = ?', type);
+      const tutorials = await queryAsync('SELECT * FROM tutorials');
 
       res.status(200).json(tutorials);
 
