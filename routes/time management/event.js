@@ -2,21 +2,13 @@ const express = require('express')
 const { queryAsync } = require('../../conn');
 
 const router = express.Router()
-const multer = require('multer');
-const fs = require('fs');
+const upload = require('../../middleware/multerConfig');
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, '../../uploads'); 
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    }
-});
-
-const upload = multer({ storage: storage });
 router.post('/', upload.single('image'), async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image uploaded' });
+    }
       const { eventName, description, date, location, time } = req.body;
       const image = req.file.filename; 
       if (!eventName || !description || !location || !date || !time || !image) {

@@ -1,6 +1,7 @@
 const express = require('express')
 const {queryAsync} = require('../../conn')
 router = express.Router()
+const upload = require('../../middleware/multerConfig')
 
 router.get('/', async(req, res) =>{
     try {
@@ -12,12 +13,16 @@ router.get('/', async(req, res) =>{
         res.status(500).json({ error: "Internal server error", message : error });
     }
 })
-router.post('/', async (req, res) => {
+router.post('/', upload.single('image'), async (req, res) => {
     try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No image uploaded' });
+          }
         const userId = req.user.id;
-        const { name, image, description, link} = req.body;
+        const { name, description, link, resources} = req.body;
+        const image = req.file.filename; 
 
-        if (!name || !image || !description || !link) {
+        if (!name || !description || !link || !image || !description) {
             return res.status(400).json({ message: "All fields required" });
         }
 
