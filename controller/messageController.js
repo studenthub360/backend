@@ -1,10 +1,9 @@
-const { executeQuery } = require('../conn');
+const { queryAsync } = require('../conn');
 
 const sendMessage = async (req, res) => {
-    console.log('message sent');
     try {
-        const { message } = req.body;
-        const { id: receiverId } = req.params;
+        const message = req.body.message;
+        const receiverId = req.params.id;
         const senderId = req.user.id;
 
         // Check if conversation exists
@@ -13,7 +12,7 @@ const sendMessage = async (req, res) => {
             WHERE (sender_id = ? AND receiver_id = ?) 
             OR (sender_id = ? AND receiver_id = ?)
         `;
-        const [existingConversation] = await executeQuery(conversationQuery, [senderId, receiverId, receiverId, senderId]);
+        const [existingConversation] = await queryAsync(conversationQuery, [senderId, receiverId, receiverId, senderId]);
 
         let conversationId;
         if (!existingConversation) {
@@ -22,20 +21,29 @@ const sendMessage = async (req, res) => {
                 INSERT INTO conversation (sender_id, receiver_id) 
                 VALUES (?, ?)
             `;
-            const result = await executeQuery(insertConversationQuery, [senderId, receiverId]);
+            const result = await queryAsync(insertConversationQuery, [senderId, receiverId]);
             conversationId = result.insertId;
         } else {
             conversationId = existingConversation.id;
         }
 
+        // Insert message
         const insertMessageQuery = `
-            INSERT INTO messages (sender_id, receiver_id, msg) 
-            VALUES (?, ?, ?)
+            INSERT INTO messages (sender_id, receiver_id, msg, conversation_id) 
+            VALUES (?, ?, ?, ?)
         `;
-        const result = await executeQuery(insertMessageQuery, [senderId, receiverId, message]);
-        const messageId = result.insertId;
+        const messageResult = await queryAsync(insertMessageQuery, [senderId, receiverId, message, conversationId]);
+        const messageId = messageResult.insertId;
 
-        const newMessage = { id: messageId, senderId, receiverId, message };
+        // Update message with conversation ID
+        const updateMessageQuery = `
+            UPDATE messages 
+            SET conversation_id = ? 
+            WHERE msg_id = ?
+        `;
+        await queryAsync(updateMessageQuery, [conversationId, messageId]);
+
+        const newMessage = { id: messageId, senderId, receiverId, message, conversationId };
         res.status(201).json(newMessage);
     } catch (error) {
         console.log("Error in sendMessage controller: ", error.message);
@@ -43,18 +51,20 @@ const sendMessage = async (req, res) => {
     }
 };
 
+
 const getMessages = async (req, res) => {
     try {
-        const { receiverId } = req.params;
+        const receiverId = req.params.id; 
         const senderId = req.user.id;
-
+        console.log(receiverId)
+        console.log(senderId)
         // Check if conversation exists
         const conversationQuery = `
             SELECT * FROM conversation 
             WHERE (sender_id = ? AND receiver_id = ?) 
             OR (sender_id = ? AND receiver_id = ?)
         `;
-        const [existingConversation] = await executeQuery(conversationQuery, [senderId, receiverId, receiverId, senderId]);
+        const [existingConversation] = await queryAsync(conversationQuery, [senderId, receiverId, receiverId, senderId]);
 
         let conversationId;
         if (!existingConversation) {
@@ -63,7 +73,7 @@ const getMessages = async (req, res) => {
                 INSERT INTO conversation (sender_id, receiver_id) 
                 VALUES (?, ?)
             `;
-            const result = await executeQuery(insertConversationQuery, [senderId, receiverId]);
+            const result = await queryAsync(insertConversationQuery, [senderId, receiverId]);
             conversationId = result.insertId;
         } else {
             conversationId = existingConversation.id;
@@ -75,7 +85,7 @@ const getMessages = async (req, res) => {
                 SELECT * FROM messages
                 WHERE conversation_id = ?
             `;
-            const messages = await executeQuery(getMessagesQuery, [conversationId]);
+            const messages = await queryAsync(getMessagesQuery, [conversationId]);
             res.status(200).json(messages);
         } else {
             res.status(200).json([]);

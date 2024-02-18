@@ -1,12 +1,17 @@
 const express = require('express');
 const { sendMessage, getMessages } = require('../../controller/messageController');
 const protectRoute = require('../../middleware/protection');
-// const get
-// import protectRoute from "../middleware/protectRoute.js";
+const messageUser = require('../../controller/messageUser');
 
 const router = express.Router();
 
-router.get("/:id",protectRoute, getMessages);
-router.post("/send/:id",protectRoute, sendMessage);
+// Route for retrieving messages
+router.get("/:id", protectRoute, getMessages);
 
-module.exports = router
+// Route for retrieving friends
+router.get("/friends", protectRoute, messageUser);
+
+// Route for sending messages
+router.post("/send/:id", protectRoute, sendMessage);
+
+module.exports = router;
