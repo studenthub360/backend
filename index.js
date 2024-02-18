@@ -11,6 +11,7 @@ const regRoutes = require('./routes/authentication/reg');
 
 //user
 const userRoutes = require('./routes/authentication/user');
+const updateUserRoutes = require('./routes/authentication/updateDetails');
 
 //task management
 const taskRoutes = require('./routes/time management/task')
@@ -64,6 +65,7 @@ app.use("/api/message", messageRoutes);
 
 //user route
 app.use("/api/user", protectRoute, userRoutes);
+app.use("/api/edit", protectRoute, updateUserRoutes);
 
 //task management
 app.use("/api/task", protectRoute, taskRoutes);
