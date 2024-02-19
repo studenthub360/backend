@@ -10,14 +10,14 @@ router.patch('/', async (req, res) => {
     const userId = req.user.id; // Assuming user ID is available in the request object
 
     // Destructure the fields from the request body
-    const { email, department, level, university, fullName } = req.body;
+    const { email, department, level, university, full_name } = req.body;
     
     // Construct an object with the fields to be updated
     const updateFields = {};
     if (department) updateFields.department = department;
     if (level) updateFields.level = level;
     if (university) updateFields.university = university;
-    if (fullName) updateFields.full_name = fullName;
+    if (full_name) updateFields.full_name = full_name;
     if (email) updateFields.email = email;
 
     // Execute the update query
