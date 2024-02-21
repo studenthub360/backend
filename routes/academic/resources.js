@@ -1,6 +1,8 @@
 const express = require('express')
 const {queryAsync} = require('../../conn')
 router = express.Router()
+// const cloudinary = require("../utils/cloudinary");
+// const upload = require("../middleware/multerConfig");
 // const upload = require('../../middleware/multerConfig')
 
 router.get('/', async(req, res) =>{
