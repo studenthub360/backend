@@ -1,18 +1,24 @@
-const express = require('express')
-const {queryAsync} = require('../../conn')
-router = express.Router()
+const express = require('express');
+const { queryAsync } = require('../../conn');
+const cloudinary = require('../../utils/cloudinary');
+const upload = require("../../middleware/multerConfig"); // Import cloudinary
+const router = express.Router();
 
 router.get('/', async(req, res) =>{
     try {
         const groups = await queryAsync('SELECT * FROM netgrp');
-        res.status(200).json(groups);
-
+        const groupsWithImageURLs = await Promise.all(groups.map(async (group) => {
+            const imageUrl = await cloudinary.url(group.image); // Fetch image URL
+            return { ...group, imageUrl }; // Append imageUrl to group object
+        }));
+        res.status(200).json(groupsWithImageURLs);
     } catch (error) {
         console.error("Error fetching tasks:", error);
-        res.status(500).json({ error: "Internal server error", message : error });
+        res.status(500).json({ error: "Internal server error", message: error.message });
     }
+
 })
-router.post('/', async (req, res) => {
+router.post('/', upload.single("image"), async (req, res) => {
     try {
         // const userId = req.user.id;
         const { groupName, description, groupLink} = req.body;
@@ -20,11 +26,15 @@ router.post('/', async (req, res) => {
         if (!groupName || !description || !groupLink) {
             return res.status(400).json({ message: "All fields required" });
         }
-
+        if (!req.file) {
+            return res.status(400).json({ message: "Image required" });
+        }
+        const result = await cloudinary.uploader.upload(req.file.path);
         const newGroup = {
             groupName : groupName,
             groupDescription : description,
-            groupLink : groupLink
+            groupLink : groupLink,
+            image : result.public_id
         };
 
         await queryAsync('INSERT INTO netgrp SET ?', newGroup);

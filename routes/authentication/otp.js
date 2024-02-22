@@ -1,6 +1,6 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
-const { v4: uuidv4 } = require('uuid');
+// const bcrypt = require('bcrypt');
+// const { v4: uuidv4 } = require('uuid');
 const { queryAsync } = require('../../conn');
 
 const router = express.Router();
@@ -50,7 +50,7 @@ router.post('/', async (req, res) => {
             // await storeOTPInDatabase(email, otp);
 
     // Send response
-    return res.status(200).json({ message: 'Password reset link sent successfully' });
+    return res.status(200).json({ message: 'OTP sent successfully, please check your mail' });
         }
     } catch (error) {
         console.error('Error querying the database:', error);

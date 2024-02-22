@@ -2,14 +2,15 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const { connection } = require('../../conn');
 const { generateJwt } = require('../../utils/jwtGenerator');
+// const { sendEmailUsingTemplate } = require('../../utils/sendEmail')
 
 const router = express.Router();
 
 router.post('/', async (req, res) => {
   try {
     const { email, password } = req.body;
-    if(!email || !password){
-      res.status(404).json({message : 'Fields cannot be empty'})
+    if (!email || !password) {
+      res.status(404).json({ message: 'Fields cannot be empty' });
     }
     const query = 'SELECT * FROM user WHERE email = ?';
     
@@ -27,7 +28,11 @@ router.post('/', async (req, res) => {
           // Generate JWT token
           const token = generateJwt(user.unique_id);
 
-          // Send response with token
+          // Send welcome email
+          // sendEmailUsingTemplate("welcome", user.email, {
+          //   name: user.first_name, 
+          // });
+
           res.status(200).json({ message: 'Login Successful', token });
         } else {
           res.status(401).json({ error: 'Invalid Password' });
@@ -41,5 +46,6 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error', message: error.message });
   }
 });
+
 
 module.exports = router;
