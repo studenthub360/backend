@@ -28,7 +28,7 @@ function sendMail(email, subject, htmlbody) {
 }
 
 async function sendEmailUsingTemplate(templateAlias, recipientEmail, data, name) {
-  const ZEPTO_API_KEY = process.env.ZEPTO_API_KEY || 'wSsVR61+8xejWK8smWKlJOw7mlkEUlj/Rhkri1Gg4yD/SqzB9MdqlUHHB1SvHfIeEzVpETVErb0vnxpWgWUPjNgvywoJDSiF9mqRe1U4J3x17qnvhDzDX25blRGPJIsLxAlommVlFs8m+g==';
+  const ZEPTO_API_KEY = process.env.ZEPTO_API_KEY ;
   const url = 'https://api.zeptomail.com/v1.1/email/template';
   const sender_name = name || "noreply@studenthub360.software";
 
