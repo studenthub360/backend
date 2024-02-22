@@ -74,7 +74,7 @@ app.use("/api/message", messageRoutes);
 //user route
 app.use("/api/user", protectRoute, userRoutes);
 app.use("/api/edit", protectRoute, updateUserRoutes);
-app.use("/api/otp", protectRoute, sendOtp);
+app.use("/api/otp", sendOtp);
 
 //task management
 app.use("/api/task", protectRoute, taskRoutes);
