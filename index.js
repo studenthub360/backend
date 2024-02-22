@@ -37,6 +37,13 @@ const tutoringRoutes = require('./routes/academic/tutoring')
 const messageRoutes = require('./routes/chat/message');
 const cookieParser = require( 'cookie-parser' );
 
+//feedback
+const feedbackAcad = require('./routes/academic/feedbackaca')
+const feedbackSoc = require('./routes/social networking/feedback')
+const feedbacktime = require('./routes/time management/feedback')
+const feedbackwell = require('./routes/well-being/feedback')
+
+
 // ...imports
 
 const app = express();
@@ -85,6 +92,13 @@ app.use("/api/stress", protectRoute, stressMangRoutes);
 app.use("/api/mental", protectRoute, mentalHealthRoutes);
 app.use("/api/resources", protectRoute, rescRoutes);
 app.use("/api/tutoring", protectRoute, tutoringRoutes);
+
+
+//feedback
+app.use("/api/feedback/acad", protectRoute, feedbackAcad);
+app.use("/api/feedback/social", protectRoute, feedbackSoc);
+app.use("/api/feedback/time", protectRoute, feedbacktime);
+app.use("/api/feedback/well", protectRoute, feedbackwell);
 
 // Global Error Handling Middleware
 app.use((err, req, res, next) => {
