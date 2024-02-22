@@ -20,6 +20,25 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: "Internal server error", message: error.message });
     }
 });
+router.get('/:id', async (req, res) => {
+    const eventId = req.params.id;
+    try {
+        const event = await queryAsync('SELECT * FROM netevents WHERE id = ?', [eventId]);
+        
+        if (event.length === 0) {
+            return res.status(404).json({ error: "Event not found" });
+        }
+        
+        const imageUrl = await cloudinary.url(event[0].image);
+        const eventWithImageUrl = { ...event[0], imageUrl };
+        
+        res.status(200).json(eventWithImageUrl);
+    } catch (error) {
+        console.error("Error fetching event:", error);
+        res.status(500).json({ error: "Internal server error", message: error.message });
+    }
+});
+
 
 router.post('/', upload.single("image"), async (req, res) => {
     try {
